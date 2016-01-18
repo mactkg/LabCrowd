@@ -1,6 +1,10 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxCv.h"
+
+using namespace ofxCv;
+using namespace cv;
 
 class ofApp : public ofBaseApp{
 
@@ -15,10 +19,17 @@ class ofApp : public ofBaseApp{
 		void mouseDragged(int x, int y, int button);
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-		
+
+    ofVideoGrabber cam;
+    cv::BackgroundSubtractorMOG2 bgSub;
+    bool bBrushDown;
+    int rad = 20;
+    
+    // mask
+    ofShader shader;
+    ofFbo maskFbo;
+    ofFbo fbo;
+    ofImage img;
+    ofPixels pixels;
+    cv::Mat result;
 };
