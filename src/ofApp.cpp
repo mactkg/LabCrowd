@@ -73,8 +73,6 @@ void ofApp::draw(){
     ofSetColor(255);
     maskFbo.draw(0, 400);
  
-    i.draw(700, 0);
-    
     // copy fbo to memory
     ofSetColor(255);
     fbo.readToPixels(pixels);
@@ -111,6 +109,8 @@ void ofApp::keyPressed(int key){
         maskFbo.readToPixels(savePixels);
         saveImage.setFromPixels(savePixels);
         saveImage.save("mask.png");
+    } else if (key == 'u') {
+        updateData(ofGetTimestampString());
     }
 }
 
@@ -137,4 +137,12 @@ void ofApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
     bBrushDown = false;
+}
+
+//--------------------------------------------------------------
+// blocking!!
+void ofApp::updateData(string state) {
+    string node = "/Users/kenta/.ndenv/shims/node";
+    string script = ofToDataPath("../../scripts/update.js");
+    ofLogNotice() << ofSystem(node + " " + script + " --key " + MACTKG_API_KEY + " --state " + state);
 }

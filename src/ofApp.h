@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxCv.h"
+#include "key.h"
 
 using namespace ofxCv;
 using namespace cv;
@@ -19,7 +20,8 @@ class ofApp : public ofBaseApp{
 		void mouseDragged(int x, int y, int button);
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
-
+        void updateData(string state);
+    
     ofVideoGrabber cam;
     cv::BackgroundSubtractorMOG2 bgSub;
     bool bBrushDown;
