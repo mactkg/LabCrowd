@@ -2,17 +2,20 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    // shader
     if(ofIsGLProgrammableRenderer()){
         shader.load("shadersGL3/shader");
     } else {
         shader.load("shadersGL2/shader");
     }
-    
    
+    // init camera
     int width = 320;
     int height = 240;
+    cam.setDeviceID(1);
     cam.initGrabber(width, height);
-   
+  
+    // init fbo
     maskFbo.allocate(width, height);
     maskFbo.begin();
     ofClear(0, 0, 0, 255);
@@ -28,15 +31,18 @@ void ofApp::setup(){
     fbo.begin();
     ofClear(0, 0, 0, 255);
     fbo.end();
+   
+    // ui settings
+    aratio = cam.getWidth()/cam.getHeight();
+    w = 200;
+    h = w/aratio;
+    rate = w / cam.getWidth();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     cam.update();
-}
 
-//--------------------------------------------------------------
-void ofApp::draw(){
     // update camera
     ofImage camImg = cam.getPixels();
    
@@ -45,7 +51,7 @@ void ofApp::draw(){
         maskFbo.begin();
         
         ofSetColor(255, 0, 0);
-        ofDrawEllipse(mouseX, mouseY, rad, rad);
+        ofDrawEllipse(mouseX/rate , mouseY/rate, rad, rad);
         
         maskFbo.end();
     }
@@ -61,30 +67,52 @@ void ofApp::draw(){
     shader.end();
     fbo.end();
     
-    // live camera
-    ofSetColor(255, 255, 255, 10);
-    cam.draw(0, 0);
-   
-    // masked camera
-    ofSetColor(255, 255, 255, 240);
-    fbo.draw(0, 0);
- 
-    // mask
-    ofSetColor(255);
-    maskFbo.draw(0, 400);
- 
     // copy fbo to memory
     ofSetColor(255);
     fbo.readToPixels(pixels);
-    img.setFromPixels(pixels);
-    img.draw(400, 0);
-   
+    frameImg.setFromPixels(pixels);
+
     // Background Subtraction(MoG)
-    bgSub(toCv(img), result);
+    bgSub(toCv(frameImg), result);
+
+    // queuing results
+    if (ofGetFrameNum() % 1 == 0) {
+        cv::Mat mat;
+        result.copyTo(mat);
+        results.emplace_back(mat);
+        if (results.size() > 31) {
+            results.pop_front();
+        }
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::draw() {
+    // live camera
+    ofSetColor(255, 255, 255, 10);
+    cam.draw(0, 0, w, h);
+   
+    // masked camera
+    ofSetColor(255, 255, 255, 240);
+    fbo.draw(0, 0, w, h);
+ 
+    // mask
+    ofSetColor(255);
+    maskFbo.draw(0, h, w, h);
+    
+    // capture image that is passed to bgSub
+    frameImg.draw(w, 0, w, h);
     
     // draw!
-    drawMat(result, 400, 400);
+    drawMat(result, w, h*2, w*2, h*2);
+
+    for (auto it = results.begin(); it != results.end(); it++) {
+        ofSetColor(255, 255, 255, 20);
+        drawMat(*it, w*2, 0, w*2, h*2);
+        //drawMat(*it, w*2, (results.end() - it)*20, w*2, h*2);
+    }
     
+    // ui
     ofPushMatrix(); ofPushStyle();
     string str;
     str += "w: rad-=5; e: rad+=5; s: save buffer SPACE: clear\n";

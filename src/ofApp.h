@@ -31,7 +31,13 @@ class ofApp : public ofBaseApp{
     ofShader shader;
     ofFbo maskFbo;
     ofFbo fbo;
-    ofImage img;
+    ofImage frameImg;
     ofPixels pixels;
     cv::Mat result;
+    
+    std::deque<cv::Mat> results;
+    
+    // ui settings
+    float aratio, rate;
+    int w, h;
 };
