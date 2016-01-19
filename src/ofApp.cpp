@@ -46,6 +46,11 @@ void ofApp::setup(){
     secondFbo.begin();
     ofClear(0, 0, 0, 255);
     secondFbo.end();
+   
+    contourFinder.setMinAreaRadius(10);
+    contourFinder.setMaxAreaRadius(400);
+   
+    results.clear();
     
     // ui settings
     aratio = cam.getWidth()/cam.getHeight();
@@ -57,7 +62,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     cam.update();
-
+    
     // draw a mask
     if (bBrushDown) {
         maskAreaFbo.begin();
@@ -83,8 +88,8 @@ void ofApp::update(){
     secondShader.begin();
     secondShader.setUniformTexture("maskTex", maskAreaFbo.getTexture(), 1);
     firstFbo.draw(0, 0);
-   
     secondShader.end();
+    
     secondFbo.end();
     
     // copy fbo to memory
@@ -95,13 +100,23 @@ void ofApp::update(){
     bgSub(toCv(frameImg), result);
 
     // queuing results
-    if (ofGetFrameNum() % 2 == 0) {
+    if (ofGetFrameNum() % 2 == 0 && ofGetElapsedTimef() > 1) {
         cv::Mat mat;
         result.copyTo(mat);
         results.emplace_back(mat);
-        if (results.size() > 180) {
+        if (results.size() > 300) { // 300frame: about 10sec
             results.pop_front();
         }
+        
+        // update composed histories
+        composedResults = *results.begin();
+        for (auto it = results.begin(); it != results.end(); it++) {
+            bitwise_or(composedResults, *it, composedResults);
+        }
+    
+        float threshold = ofMap(mouseX, 0, ofGetWidth(), 0, 255);
+        contourFinder.setThreshold(threshold);
+        contourFinder.findContours(composedResults);
     }
 }
 
@@ -123,13 +138,15 @@ void ofApp::draw() {
     frameImg.draw(w, 0, w, h);
     
     // draw!
-    drawMat(result, 0, h*2, w*2, h*2);
-
-    for (auto it = results.begin(); it != results.end(); it++) {
-        ofSetColor(255, 255, 255, 20);
-        drawMat(*it, w*2, 0, w*2, h*2);
-        //drawMat(*it, w*2, (results.end() - it)*20, w*2, h*2);
-    }
+    drawMat(result, 0, h*2, w, h*1);
+    drawMat(composedResults, w*2, 0, w*1, h*1);
+        
+    ofPushMatrix();
+    ofTranslate(w*2, 0);
+    ofScale(rate*1, rate*1);
+    ofSetColor(255);
+    contourFinder.draw();
+    ofPopMatrix();
     
     // ui
     ofPushMatrix(); ofPushStyle();

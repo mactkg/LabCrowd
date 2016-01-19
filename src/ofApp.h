@@ -29,8 +29,10 @@ class ofApp : public ofBaseApp{
 #else
     ofVideoPlayer cam;
 #endif
+   
+    BackgroundSubtractorMOG2 bgSub;
+    ContourFinder contourFinder;
     
-    cv::BackgroundSubtractorMOG2 bgSub;
     bool bBrushDown;
     int rad = 20;
     
@@ -46,6 +48,7 @@ class ofApp : public ofBaseApp{
     cv::Mat result;
     
     std::deque<cv::Mat> results;
+    Mat composedResults;
     
     // ui settings
     float aratio, rate;
