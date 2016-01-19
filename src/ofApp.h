@@ -28,9 +28,10 @@ class ofApp : public ofBaseApp{
     int rad = 20;
     
     // mask
-    ofShader shader;
+    ofShader maskShader;
     ofFbo maskFbo;
     ofFbo fbo;
+    ofFbo resultBufFbo;
     ofImage frameImg;
     ofPixels pixels;
     cv::Mat result;

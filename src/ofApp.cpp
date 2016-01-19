@@ -4,9 +4,9 @@
 void ofApp::setup(){
     // shader
     if(ofIsGLProgrammableRenderer()){
-        shader.load("shadersGL3/shader");
+        maskShader.load("shadersGL3/shader");
     } else {
-        shader.load("shadersGL2/shader");
+        maskShader.load("shadersGL2/shader");
     }
    
     // init camera
@@ -31,7 +31,12 @@ void ofApp::setup(){
     fbo.begin();
     ofClear(0, 0, 0, 255);
     fbo.end();
-   
+  
+    resultBufFbo.allocate(width, height);
+    resultBufFbo.begin();
+    ofClear(0, 0, 0, 255);
+    resultBufFbo.end();
+    
     // ui settings
     aratio = cam.getWidth()/cam.getHeight();
     w = 200;
@@ -60,11 +65,11 @@ void ofApp::update(){
     fbo.begin();
     ofClear(0, 0, 0, 0);
     
-    shader.begin();
-    shader.setUniformTexture("maskTex", maskFbo.getTexture(), 1);
+    maskShader.begin();
+    maskShader.setUniformTexture("maskTex", maskFbo.getTexture(), 1);
     cam.draw(0, 0);
    
-    shader.end();
+    maskShader.end();
     fbo.end();
     
     // copy fbo to memory
@@ -75,14 +80,16 @@ void ofApp::update(){
     // Background Subtraction(MoG)
     bgSub(toCv(frameImg), result);
 
+    result.flags;
+    
     // queuing results
-    if (ofGetFrameNum() % 1 == 0) {
-        cv::Mat mat;
-        result.copyTo(mat);
-        results.emplace_back(mat);
-        if (results.size() > 31) {
-            results.pop_front();
-        }
+    if(ofGetFrameNum() % 8 == 0) {
+        resultBufFbo.begin();
+        ofSetColor(0, 0, 0, 200);
+        ofDrawRectangle(0, 0, resultBufFbo.getWidth(), resultBufFbo.getHeight());
+        ofSetColor(255, 255, 255, 30);
+        drawMat(result, 0, 0);
+        resultBufFbo.end();
     }
 }
 
@@ -106,11 +113,7 @@ void ofApp::draw() {
     // draw!
     drawMat(result, w, h*2, w*2, h*2);
 
-    for (auto it = results.begin(); it != results.end(); it++) {
-        ofSetColor(255, 255, 255, 20);
-        drawMat(*it, w*2, 0, w*2, h*2);
-        //drawMat(*it, w*2, (results.end() - it)*20, w*2, h*2);
-    }
+    resultBufFbo.draw(w*2, 0, w*2, h*2);
     
     // ui
     ofPushMatrix(); ofPushStyle();

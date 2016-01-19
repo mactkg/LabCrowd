@@ -99,6 +99,8 @@
 		33FF03222909C1A0ECE43753 /* cv.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cv.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cv.h; sourceTree = SOURCE_ROOT; };
 		35EEEA3F57EFB3D7DE4C0DED /* saturate_cast.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = saturate_cast.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/saturate_cast.hpp; sourceTree = SOURCE_ROOT; };
 		36F0FF7F8D7342D220CC6319 /* dummy.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = dummy.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/dummy.h; sourceTree = SOURCE_ROOT; };
+		374DC4A71C4E251F00BD52EA /* buffering.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = buffering.frag; sourceTree = "<group>"; };
+		374DC4A81C4E251F00BD52EA /* buffering.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = buffering.vert; sourceTree = "<group>"; };
 		37BC75451C4CCE2D0094AFAE /* shader.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.frag; sourceTree = "<group>"; };
 		37BC75461C4CCE2D0094AFAE /* shader.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.vert; sourceTree = "<group>"; };
 		37BC75481C4D59400094AFAE /* key.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = key.h; sourceTree = "<group>"; };
@@ -423,6 +425,8 @@
 		37BC75441C4CCE2D0094AFAE /* shadersGL2 */ = {
 			isa = PBXGroup;
 			children = (
+				374DC4A71C4E251F00BD52EA /* buffering.frag */,
+				374DC4A81C4E251F00BD52EA /* buffering.vert */,
 				37BC75451C4CCE2D0094AFAE /* shader.frag */,
 				37BC75461C4CCE2D0094AFAE /* shader.vert */,
 			);
