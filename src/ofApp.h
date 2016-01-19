@@ -4,6 +4,8 @@
 #include "ofxCv.h"
 #include "key.h"
 
+//#define USE_CAMERA
+
 using namespace ofxCv;
 using namespace cv;
 
@@ -21,16 +23,24 @@ class ofApp : public ofBaseApp{
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
         void updateData(string state);
-    
+   
+#ifdef USE_CAMERA
     ofVideoGrabber cam;
+#else
+    ofVideoPlayer cam;
+#endif
+    
     cv::BackgroundSubtractorMOG2 bgSub;
     bool bBrushDown;
     int rad = 20;
     
     // mask
-    ofShader shader;
-    ofFbo maskFbo;
-    ofFbo fbo;
+    ofShader firstShader; // gaussY
+    ofShader secondShader; // gaussX, mask;
+    ofFbo maskAreaFbo;
+    ofFbo firstFbo;
+    ofFbo secondFbo;
+    
     ofImage frameImg;
     ofPixels pixels;
     cv::Mat result;

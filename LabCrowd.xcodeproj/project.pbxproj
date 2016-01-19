@@ -99,8 +99,11 @@
 		33FF03222909C1A0ECE43753 /* cv.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cv.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cv.h; sourceTree = SOURCE_ROOT; };
 		35EEEA3F57EFB3D7DE4C0DED /* saturate_cast.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = saturate_cast.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/saturate_cast.hpp; sourceTree = SOURCE_ROOT; };
 		36F0FF7F8D7342D220CC6319 /* dummy.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = dummy.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/dummy.h; sourceTree = SOURCE_ROOT; };
-		37BC75451C4CCE2D0094AFAE /* shader.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.frag; sourceTree = "<group>"; };
-		37BC75461C4CCE2D0094AFAE /* shader.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.vert; sourceTree = "<group>"; };
+		374DC4AD1C4E499100BD52EA /* gaussianXandMask.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = gaussianXandMask.frag; sourceTree = "<group>"; };
+		374DC4AE1C4E499100BD52EA /* gaussianXandMask.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = gaussianXandMask.vert; sourceTree = "<group>"; };
+		374DC4AF1C4E499100BD52EA /* gaussianY.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = gaussianY.frag; sourceTree = "<group>"; };
+		374DC4B01C4E499100BD52EA /* gaussianY.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = gaussianY.vert; sourceTree = "<group>"; };
+		374DC4B11C4E499100BD52EA /* shader.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = shader.vert; sourceTree = "<group>"; };
 		37BC75481C4D59400094AFAE /* key.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = key.h; sourceTree = "<group>"; };
 		37D155721DCC51F3D1DC2E02 /* color_detail.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = color_detail.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/detail/color_detail.hpp; sourceTree = SOURCE_ROOT; };
 		3ADB4E06C4EDB97E020A778D /* functional.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = functional.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/functional.hpp; sourceTree = SOURCE_ROOT; };
@@ -423,8 +426,11 @@
 		37BC75441C4CCE2D0094AFAE /* shadersGL2 */ = {
 			isa = PBXGroup;
 			children = (
-				37BC75451C4CCE2D0094AFAE /* shader.frag */,
-				37BC75461C4CCE2D0094AFAE /* shader.vert */,
+				374DC4AD1C4E499100BD52EA /* gaussianXandMask.frag */,
+				374DC4AE1C4E499100BD52EA /* gaussianXandMask.vert */,
+				374DC4AF1C4E499100BD52EA /* gaussianY.frag */,
+				374DC4B01C4E499100BD52EA /* gaussianY.vert */,
+				374DC4B11C4E499100BD52EA /* shader.vert */,
 			);
 			name = shadersGL2;
 			path = bin/data/shadersGL2;

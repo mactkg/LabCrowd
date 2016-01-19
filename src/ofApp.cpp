@@ -4,20 +4,30 @@
 void ofApp::setup(){
     // shader
     if(ofIsGLProgrammableRenderer()){
-        shader.load("shadersGL3/shader");
+        firstShader.load("shaderGL3/shader.vert", "shaderGL3/gaussianY.frag");
+        secondShader.load("shaderGL3/shader.vert", "shaderGL3/gaussianXandMask.frag");
     } else {
-        shader.load("shadersGL2/shader");
+        firstShader.load("shadersGL2/gaussianY");
+        secondShader.load("shadersGL2/gaussianXandMask");
     }
    
-    // init camera
-    int width = 320;
-    int height = 240;
+#ifdef USE_CAMERA
+    int width = 480;
+    int height = 270;
     cam.setDeviceID(1);
     cam.initGrabber(width, height);
+#else
+    // init camera
+    cam.load("movies/test_movie.mov");
+    cam.play();
+    
+    int width = cam.getWidth();
+    int height = cam.getHeight();
+#endif
   
     // init fbo
-    maskFbo.allocate(width, height);
-    maskFbo.begin();
+    maskAreaFbo.allocate(width, height);
+    maskAreaFbo.begin();
     ofClear(0, 0, 0, 255);
     ofFile maskFile;
     if(maskFile.open(ofToDataPath("mask.png"))) {
@@ -25,16 +35,21 @@ void ofApp::setup(){
         i.load(maskFile);
         i.draw(0, 0);
     }
-    maskFbo.end();
-    
-    fbo.allocate(width, height);
-    fbo.begin();
-    ofClear(0, 0, 0, 255);
-    fbo.end();
+    maskAreaFbo.end();
    
+    firstFbo.allocate(width, height);
+    firstFbo.begin();
+    ofClear(0, 0, 0, 255);
+    firstFbo.end();
+    
+    secondFbo.allocate(width, height);
+    secondFbo.begin();
+    ofClear(0, 0, 0, 255);
+    secondFbo.end();
+    
     // ui settings
     aratio = cam.getWidth()/cam.getHeight();
-    w = 200;
+    w = 450;
     h = w/aratio;
     rate = w / cam.getWidth();
 }
@@ -43,44 +58,48 @@ void ofApp::setup(){
 void ofApp::update(){
     cam.update();
 
-    // update camera
-    ofImage camImg = cam.getPixels();
-   
     // draw a mask
     if (bBrushDown) {
-        maskFbo.begin();
+        maskAreaFbo.begin();
+       
+        ofLogNotice() << "draw:" << mouseX/rate << ", " << mouseY/rate;
+        ofSetColor(255, 0, 0, 255);
+        ofDrawEllipse(mouseX/rate, mouseY/rate, rad, rad);
         
-        ofSetColor(255, 0, 0);
-        ofDrawEllipse(mouseX/rate , mouseY/rate, rad, rad);
-        
-        maskFbo.end();
+        maskAreaFbo.end();
     }
    
-    // fbo
-    fbo.begin();
+    // gaussian(Y)
+    firstFbo.begin();
+    firstShader.begin();
+    cam.draw(0, 0);
+    firstShader.end();
+    firstFbo.end();
+   
+    // gaussian(X) and mask
+    secondFbo.begin();
     ofClear(0, 0, 0, 0);
     
-    shader.begin();
-    shader.setUniformTexture("maskTex", maskFbo.getTexture(), 1);
-    cam.draw(0, 0);
+    secondShader.begin();
+    secondShader.setUniformTexture("maskTex", maskAreaFbo.getTexture(), 1);
+    firstFbo.draw(0, 0);
    
-    shader.end();
-    fbo.end();
+    secondShader.end();
+    secondFbo.end();
     
     // copy fbo to memory
     ofSetColor(255);
-    fbo.readToPixels(pixels);
+    secondFbo.readToPixels(pixels);
     frameImg.setFromPixels(pixels);
 
-    // Background Subtraction(MoG)
     bgSub(toCv(frameImg), result);
 
     // queuing results
-    if (ofGetFrameNum() % 1 == 0) {
+    if (ofGetFrameNum() % 2 == 0) {
         cv::Mat mat;
         result.copyTo(mat);
         results.emplace_back(mat);
-        if (results.size() > 31) {
+        if (results.size() > 180) {
             results.pop_front();
         }
     }
@@ -94,17 +113,17 @@ void ofApp::draw() {
    
     // masked camera
     ofSetColor(255, 255, 255, 240);
-    fbo.draw(0, 0, w, h);
+    secondFbo.draw(0, 0, w, h);
  
     // mask
     ofSetColor(255);
-    maskFbo.draw(0, h, w, h);
+    maskAreaFbo.draw(0, h, w, h);
     
     // capture image that is passed to bgSub
     frameImg.draw(w, 0, w, h);
     
     // draw!
-    drawMat(result, w, h*2, w*2, h*2);
+    drawMat(result, 0, h*2, w*2, h*2);
 
     for (auto it = results.begin(); it != results.end(); it++) {
         ofSetColor(255, 255, 255, 20);
@@ -124,9 +143,9 @@ void ofApp::draw() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if (key == ' ') {
-        maskFbo.begin();
+        maskAreaFbo.begin();
         ofClear(0, 0, 0, 255);
-        maskFbo.end();
+        maskAreaFbo.end();
     } else if (key == 'e') {
         rad += 5;
     } else if (key == 'w') {
@@ -134,7 +153,7 @@ void ofApp::keyPressed(int key){
     } else if (key == 's') {
         ofPixels savePixels;
         ofImage saveImage;
-        maskFbo.readToPixels(savePixels);
+        maskAreaFbo.readToPixels(savePixels);
         saveImage.setFromPixels(savePixels);
         saveImage.save("mask.png");
     } else if (key == 'u') {
