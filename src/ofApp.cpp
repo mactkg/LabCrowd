@@ -2,6 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofSetFrameRate(30);
+    
     // shader
     if(ofIsGLProgrammableRenderer()){
         firstShader.load("shaderGL3/shader.vert", "shaderGL3/gaussianY.frag");
@@ -106,23 +108,33 @@ void ofApp::update(){
     bgSub(toCv(frameImg), result);
 
     // queuing results
-    if (ofGetFrameNum() % 2 == 0 && ofGetElapsedTimef() > 1) {
+    // *: shoot
+    // o: through
+    // []: cv::Mat
+    // oF: [o*o*o*o*][o*o*o*o*][o*o*o*o*]... in 30fps
+    if (ofGetFrameNum() % 2 == 0 && ofGetFrameNum() >= 8) {
         cv::Mat mat;
         result.copyTo(mat);
-        results.emplace_back(mat);
-        if (results.size() > 300) { // 300frame: about 10sec
-            results.pop_front();
-        }
         
-        // update composed histories
-        composedResults = *results.begin();
-        for (auto it = results.begin(); it != results.end(); it++) {
-            bitwise_or(composedResults, *it, composedResults);
+        if(ofGetFrameNum() % 8 == 0) {
+            results.emplace_back(mat);
+            //if (results.size() > 30) { // 30 * 8frame(actually 4 frames): about 8sec
+            if (results.size() > 300) { // 300 * 8frame(actually 4 frames): about 80sec
+                results.pop_front();
+            }
+            
+            // update composed histories
+            composedResults = *results.begin();
+            for (auto it = results.begin(); it != results.end(); it++) {
+                bitwise_or(composedResults, *it, composedResults);
+            }
+        
+            float threshold = ofMap(mouseX, 0, ofGetWidth(), 0, 255);
+            contourFinder.setThreshold(threshold);
+            contourFinder.findContours(composedResults);
+        } else {
+            bitwise_and(*(results.end()-1), mat, *(results.end()-1));
         }
-    
-        float threshold = ofMap(mouseX, 0, ofGetWidth(), 0, 255);
-        contourFinder.setThreshold(threshold);
-        contourFinder.findContours(composedResults);
     }
 }
 
