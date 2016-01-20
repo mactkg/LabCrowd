@@ -2,12 +2,29 @@
 
 #include "ofMain.h"
 #include "ofxCv.h"
+#include "ofxDatGui.h"
 #include "key.h"
 
-//#define USE_CAMERA
+#define USE_CAMERA
 
 using namespace ofxCv;
 using namespace cv;
+
+class SystemThread: public ofThread{
+    
+public:
+    string cmd;
+    
+    void init(string _cmd){
+        this->cmd = _cmd;
+    }
+    
+    void threadedFunction(){
+        if (isThreadRunning()){
+            ofSystem(cmd.c_str());
+        }
+    }
+};
 
 class ofApp : public ofBaseApp{
 
@@ -22,7 +39,10 @@ class ofApp : public ofBaseApp{
 		void mouseDragged(int x, int y, int button);
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
-        void updateData(string state);
+        void updateState();
+        void onSliderEvent(ofxDatGuiSliderEvent e);
+        void onButtonEvent(ofxDatGuiButtonEvent e);
+        void updateVideoWidth(float width);
    
 #ifdef USE_CAMERA
     ofVideoGrabber cam;
@@ -49,8 +69,12 @@ class ofApp : public ofBaseApp{
     
     std::deque<cv::Mat> results;
     Mat composedResults;
-    
+   
     // ui settings
+    ofxDatGui *gui;
+    
     float aratio, rate;
     int w, h;
+    bool forceUpdate;
+    SystemThread sys;
 };

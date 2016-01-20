@@ -5,11 +5,13 @@
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
     "37526DA425E5430474A14FBFA1BC4525160B5FC1" : 0,
+    "9233F0F4A2BE011BD468E5177A5AD6623263B23D" : 0,
     "F583203F1EE3701B82D9769FDA78D69506302071" : 0
   },
-  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "FB8D9149-716C-4B6A-98B9-9E974632E45F",
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "C3B1FA9A-E706-43A3-B0AF-4D14CCB0EFBA",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "37526DA425E5430474A14FBFA1BC4525160B5FC1" : "..\/..\/addons\/ofxCv",
+    "9233F0F4A2BE011BD468E5177A5AD6623263B23D" : "..\/..\/addons\/ofxDatGui",
     "F583203F1EE3701B82D9769FDA78D69506302071" : "LabCrowd\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "LabCrowd",
@@ -20,6 +22,11 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/kylemcdonald\/ofxCv.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "37526DA425E5430474A14FBFA1BC4525160B5FC1"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/braitsch\/ofxDatGui.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9233F0F4A2BE011BD468E5177A5AD6623263B23D"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:mactkg\/LabCrowd.git",
