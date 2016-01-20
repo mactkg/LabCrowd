@@ -2,6 +2,7 @@
 
 uniform sampler2DRect tex0;
 uniform sampler2DRect maskTex;
+uniform int reverseMask;
 
 varying vec2 texCoordVarying;
 
@@ -27,5 +28,9 @@ void main()
     float mask = texture2DRect(maskTex, texCoordVarying).r;
 
     // Set
-    gl_FragColor = vec4(color.rgb, mask);
+    if (reverseMask > 0) {
+        gl_FragColor = vec4(color.rgb, 1.0-mask);
+    } else {
+        gl_FragColor = vec4(color.rgb, mask);
+    }
 }

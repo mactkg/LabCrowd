@@ -26,7 +26,7 @@ void ofApp::setup(){
     cam.initGrabber(width, height);
 #else
     // init camera
-    cam.load("movies/test_movie.mov");
+    cam.load("movies/test_movie3.mov");
     cam.play();
     
     int width = cam.getWidth();
@@ -35,8 +35,8 @@ void ofApp::setup(){
   
     // init fbo
     maskAreaFbo.allocate(width, height);
+    clearFbo(maskAreaFbo);
     maskAreaFbo.begin();
-    ofClear(0, 0, 0, 255);
     ofFile maskFile;
     if(maskFile.open(ofToDataPath("mask.png"))) {
         ofImage i;
@@ -46,15 +46,11 @@ void ofApp::setup(){
     maskAreaFbo.end();
    
     firstFbo.allocate(width, height);
-    firstFbo.begin();
-    ofClear(0, 0, 0, 255);
-    firstFbo.end();
+    clearFbo(firstFbo);
     
     secondFbo.allocate(width, height);
-    secondFbo.begin();
-    ofClear(0, 0, 0, 255);
-    secondFbo.end();
-   
+    clearFbo(secondFbo);
+    
     contourFinder.setThreshold(128);
     contourFinder.setMaxAreaRadius(400);
     contourFinder.setMinAreaRadius(5);
@@ -62,13 +58,13 @@ void ofApp::setup(){
     results.clear();
     
     // ui settings
+    reverseMask = false;
     aratio = cam.getWidth()/cam.getHeight();
     updateVideoWidth(450);
     
     gui = new ofxDatGui(ofxDatGuiAnchor::TOP_RIGHT);
-   
-    gui->setWidth(600);
     gui->addFRM();
+    
     gui->addSlider("video.width", 10, 600, 450);
     
     gui->addBreak();
@@ -76,6 +72,11 @@ void ofApp::setup(){
     gui->addSlider("cf.threshold", 0, 255, 128);
     gui->addSlider("cf.rad.max", 0, 800, 400);
     gui->addSlider("cf.rad.min", 0, 100, 5);
+    
+    gui->addBreak();
+
+    gui->addButton("Clear Mask");
+    gui->addToggle("Reverse Masking");
     
     gui->addBreak();
   
@@ -86,7 +87,6 @@ void ofApp::setup(){
     gui->onButtonEvent(this, &ofApp::onButtonEvent);
     
     gui->addHeader("LabCrowd");
-    gui->setTheme(new ofxDatGuiThemeCharcoal());
     gui->addFooter();
 }
 
@@ -119,6 +119,7 @@ void ofApp::update(){
     ofClear(0, 0, 0, 0);
     
     secondShader.begin();
+    secondShader.setUniform1i("reverseMask", reverseMask ? 1 : 0);
     secondShader.setUniformTexture("maskTex", maskAreaFbo.getTexture(), 1);
     firstFbo.draw(0, 0);
     secondShader.end();
@@ -209,9 +210,7 @@ void ofApp::draw() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if (key == ' ') {
-        maskAreaFbo.begin();
-        ofClear(0, 0, 0, 255);
-        maskAreaFbo.end();
+        clearFbo(maskAreaFbo);
     } else if (key == 'e') {
         rad += 5;
     } else if (key == 'w') {
@@ -260,12 +259,16 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
 }
 //--------------------------------------------------------------
 void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
-    cout << "onButtonEvent: " << e.target->getLabel() << "Pressed" << endl;
+    cout << "onButtonEvent: " << e.target->getLabel() << " is Pressed" << endl;
     if (e.target->is("clear buffer")) {
         results.clear();
         composedResults.zeros(composedResults.rows, composedResults.cols, composedResults.type());
     } else if(e.target->is("force update")) {
         forceUpdate = true;
+    } else if(e.target->is("reverse masking")) {
+        reverseMask = e.enabled;
+    } else if(e.target->is("clear mask")) {
+        clearFbo(maskAreaFbo);
     }
 }
 
@@ -304,4 +307,10 @@ void ofApp::updateVideoWidth(float width) {
     w = width;
     h = w/aratio;
     rate = w / cam.getWidth();
+}
+
+void ofApp::clearFbo(ofFbo &fbo) {
+    fbo.begin();
+    ofClear(0, 0, 0, 255);
+    fbo.end();
 }

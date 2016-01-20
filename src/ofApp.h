@@ -5,7 +5,7 @@
 #include "ofxDatGui.h"
 #include "key.h"
 
-#define USE_CAMERA
+//#define USE_CAMERA
 
 using namespace ofxCv;
 using namespace cv;
@@ -43,6 +43,7 @@ class ofApp : public ofBaseApp{
         void onSliderEvent(ofxDatGuiSliderEvent e);
         void onButtonEvent(ofxDatGuiButtonEvent e);
         void updateVideoWidth(float width);
+        void clearFbo(ofFbo &fbo);
    
 #ifdef USE_CAMERA
     ofVideoGrabber cam;
@@ -75,6 +76,7 @@ class ofApp : public ofBaseApp{
     
     float aratio, rate;
     int w, h;
-    bool forceUpdate;
+    int bufferLength;
+    bool forceUpdate, reverseMask;
     SystemThread sys;
 };
