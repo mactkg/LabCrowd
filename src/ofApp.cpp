@@ -14,7 +14,13 @@ void ofApp::setup(){
 #ifdef USE_CAMERA
     int width = 480;
     int height = 270;
-    cam.setDeviceID(1);
+    auto dev = cam.listDevices();
+    
+    for (auto it = dev.begin(); it != dev.end(); it++) {
+        ofLogNotice() << it->id << ": " << it->deviceName;
+    }
+    
+    cam.setDeviceID(0);
     cam.initGrabber(width, height);
 #else
     // init camera
